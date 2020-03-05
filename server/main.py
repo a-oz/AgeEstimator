@@ -3,6 +3,7 @@
 make predictions based on pretrained models.
 """
 
+from server.models.regression.predict import predict as reg_predict
 import sys
 import os
 import random
