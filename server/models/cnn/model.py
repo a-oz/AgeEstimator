@@ -8,7 +8,7 @@ import itertools
 import pandas as pd
 
 # Prevent TF form accessing GPU. We don't need it for prediction
-os.environ["CUDA_VISIBLE_DEVICES"] = "-1"  # noqa: F404
+# os.environ["CUDA_VISIBLE_DEVICES"] = "-1"  # noqa: F404
 
 from tensorflow.keras.optimizers import Nadam, Adam, SGD
 from tensorflow.keras.models import Model
