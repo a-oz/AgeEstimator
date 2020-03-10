@@ -6,3 +6,9 @@ server/data/*
 .DS_Store
 server/models/*/logs
 server/models/*/*.csv
+
+# venv
+Include/
+Lib/
+Scripts/
+pyvenv.cfg
