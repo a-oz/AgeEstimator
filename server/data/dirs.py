@@ -6,6 +6,7 @@ curr_dir = os.path.dirname(os.path.realpath(__file__))
 dataset_dir = glob.glob(os.path.join(curr_dir, "images", "*.jpg"))
 train_dir = os.path.join(curr_dir, "dataset", "train")
 test_dir = os.path.join(curr_dir, "dataset", "test")
+feature_dir = os.path.join(curr_dir, "features")
 
 
 def init_dir():
