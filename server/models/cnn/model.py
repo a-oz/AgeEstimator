@@ -13,21 +13,21 @@ import pandas as pd
 from tensorflow.keras.optimizers import Nadam, Adam, SGD
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Input, Flatten, Dense, BatchNormalization, Dropout
-from keras_vggface.vggface import VGGFace
 
 
 # Tested. No need to import them unless necessary
 # from server.models.cnn.model_combination_resnet50 import *
 # from server.models.cnn.model_combination_vgg16 import *
+from server.models.cnn.model_combination_vggface import *
 
 # --------------- Global Vars -------------------
 
-OLD_WEIGHTS_PATH = "old_vggface_classification_weights.hdf5"
-BEST_WEIGHTS_PATH = "best_vggface_classification_weights.hdf5"
+OLD_WEIGHTS_PATH = "old_nn_classification_weights.hdf5"
+BEST_WEIGHTS_PATH = "best_nn_classification_weights.hdf5"
 
 # We define our IMAGE_SIZE here because 250x250 is too big for VGGFace
 IMAGE_SIZE = (224, 224)
-INPUT_SHAPE = IMAGE_SIZE + (3,)
+INPUT_SHAPE = 2048
 
 # Make compatible path for Python and Jupyter Notebook
 try:
@@ -42,9 +42,6 @@ N_CLASSES = len(set(LABEL_MAPPING.values()))
 
 # ---------- Pretrained models ------------
 
-vgg_face = VGGFace(model="resnet50", include_top=False,
-                   input_shape=INPUT_SHAPE)
-
 
 def get_model(summary=True):
     r"""Get the model definition
@@ -54,7 +51,15 @@ def get_model(summary=True):
     @Returns:
                     The model's definition
     """
-    _, m = get_vgg_face3()
+    # _, m = get_vgg_face3()
+    x = x_in = Input(INPUT_SHAPE, name="input")
+    x = Dense(512, name="d1", activation="relu")(x)
+    x = BatchNormalization(name="bn1")(x)
+    x = Dense(256, name="d2", activation="relu")(x)
+    x = BatchNormalization(name="bn2")(x)
+    x = Dense(N_CLASSES, name="d3", activation="softmax")(x)
+
+    m = Model(inputs=x_in, outputs=x)
 
     if summary:
         m.summary()
@@ -179,49 +184,3 @@ def get_models():
     def not_excluded(x): return x[0] not in exclude_model_dict
 
     return list(filter(not_excluded, model_combinations))
-
-# ---------------- VGGFace start ----------------
-
-
-def get_vgg_face():
-    x = x_in = Input(INPUT_SHAPE, name="input")
-    x = vgg_face(x)
-    x = Flatten(name="fl")(x)
-    x = Dense(512, name="d1", kernel_initializer="he_uniform",
-              activation="relu")(x)
-    x = BatchNormalization()(x)
-    x = Dense(256, name="d1.5", kernel_initializer="he_uniform",
-              activation="relu")(x)
-    x = BatchNormalization()(x)
-    x = Dropout(0.5, name="dr1")(x)
-    x = Dense(N_CLASSES, name="d2", activation="softmax",
-              kernel_initializer="he_uniform")(x)
-
-    m = Model(inputs=x_in, outputs=x)
-    return "vggface-512-2Dense-he_uniform", m
-
-
-def get_vgg_face2():
-    x = x_in = Input(INPUT_SHAPE, name="input")
-    x = vgg_face(x)
-    x = Flatten(name="fl")(x)
-    x = Dense(256, name="d1.5", kernel_initializer="he_uniform",
-              activation="relu")(x)
-    x = BatchNormalization()(x)
-    x = Dense(N_CLASSES, name="d2", activation="softmax",
-              kernel_initializer="he_uniform")(x)
-
-    m = Model(inputs=x_in, outputs=x)
-    return "vggface-256-2Dense-he_uniform", m
-
-
-def get_vgg_face3():
-    x = x_in = Input(INPUT_SHAPE, name="input")
-    x = vgg_face(x)
-    x = Flatten(name="fl")(x)
-    x = Dense(256, name="d1.5", activation="relu")(x)
-    x = BatchNormalization()(x)
-    x = Dense(N_CLASSES, name="d2", activation="softmax")(x)
-
-    m = Model(inputs=x_in, outputs=x)
-    return "vggface-256-2Dense", m
