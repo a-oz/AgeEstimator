@@ -53,10 +53,15 @@ def get_model(summary=True):
     """
     # _, m = get_vgg_face3()
     x = x_in = Input(INPUT_SHAPE, name="input")
-    x = Dense(512, name="d1", activation="relu")(x)
+    # x = Dense(512, name="d1", activation="relu")(x)
+    x = Dense(512, name="d1", activation="relu",
+              kernel_initializer="he_uniform")(x)
     x = BatchNormalization(name="bn1")(x)
-    x = Dense(256, name="d2", activation="relu")(x)
+    # x = Dense(256, name="d2", activation="relu")(x)
+    x = Dense(256, name="d2", activation="relu",
+              kernel_initializer="he_uniform")(x)
     x = BatchNormalization(name="bn2")(x)
+    x = Dropout(0.5, name="dr1")(x)
     x = Dense(N_CLASSES, name="d3", activation="softmax")(x)
 
     m = Model(inputs=x_in, outputs=x)
