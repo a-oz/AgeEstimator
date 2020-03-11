@@ -33,6 +33,15 @@ import * as R from 'ramda'
 
 const hasError = R.either(R.equals('0'), R.equals('-1'))
 const errorOrDisplay = R.when(hasError, R.always('Something went wrong ;('))
+const SORT_ORDER_MAP = {
+  nb: 3,
+  cnn: 2,
+  regression: 1
+}
+
+const sortByName = R.sortWith([
+  R.descend(R.compose(x => SORT_ORDER_MAP[x], R.nth(0)))
+])
 
 export default {
   name: 'PhotoPrediction',
@@ -41,7 +50,7 @@ export default {
       type: Object,
       validator: R.compose(
         R.all(R.is(String)),
-        R.props(['cnn', 'regression', 'clustering'])
+        R.props(['regression', 'nb', 'cnn'])
       )
     },
     showModelName: {
@@ -51,7 +60,7 @@ export default {
   },
   computed: {
     ageList() {
-      return R.toPairs(this.ages)
+      return R.compose(sortByName, R.toPairs)(this.ages)
     }
   },
   methods: {
@@ -69,9 +78,11 @@ export default {
         return 'Convolutional Neural Network'
       }
       if (model === 'regression') {
-        return 'Logistic Regression'
+        return 'Multinomial Logistic Regression'
       }
-      // TODO: add prettified name for clustering
+      if (model === 'nb') {
+        return 'Naïve Bayes'
+      }
       return model
     },
     errorOrDisplay
