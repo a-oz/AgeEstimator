@@ -1,11 +1,11 @@
 tensorflow
 matplotlib
-pandas
+pandas==0.23.4
 flask
 opencv-python
 numpy
-git+https://github.com/rcmalli/keras-vggface.git@master
+git+https://github.com/oopdaniel/keras-vggface.git@master
 Pillow
 torch
 torchvision
-mtcnn
+git+https://github.com/oopdaniel/mtcnn@master

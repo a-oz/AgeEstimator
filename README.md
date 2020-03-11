@@ -4,17 +4,19 @@
 
 Estimate the age based on human facial images. To perform the task, we use 3 different machine learning models:
 
-- Logistic Regression
-- Clustering
+- Multinomial Logistic Regression
+- Naïve Bayes classifier
 - Multiclass classification with Convolutional Neural Network
-
-_(NOTE: this project is under development!)_
 
 ## Preview
 
 ![](./preview/app_uploaded.png)
 
 ## Get Started
+
+1. Ensure all the required dependencies are installed.
+2. Initialize the submodule for data scripts. _(optional if you've already had it locally)_
+3. Start the client and server (order doesn't matter).
 
 ### Install dependencies
 
@@ -27,6 +29,10 @@ _(NOTE: this project is under development!)_
 `cd app`
 
 `npm i`
+
+### Initialize data submodule
+
+`git submodule update --init`
 
 ### Start the server
 
