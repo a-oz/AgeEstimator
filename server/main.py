@@ -3,7 +3,6 @@
 make predictions based on pretrained models.
 """
 
-from server.models.regression.predict import predict as reg_predict
 import sys
 import os
 import random
@@ -22,11 +21,13 @@ MODULE_PATHS = list(
 MODULE_PATH = MODULE_PATHS[0] if len(MODULE_PATHS) == 1 else ""
 if MODULE_PATH not in sys.path:
     sys.path.append(MODULE_PATH)
+    print("Sys path updated")
 
 # pylint: disable=wrong-import-position
 from server.models.input_shape import INPUT_SHAPE                    # noqa: F404
 from server.models.cnn.predict import predict as cnn_predict         # noqa: F404
 from server.models.regression.predict import predict as reg_predict  # noqa: F404
+from server.models.clustering.predict import predict as nb_predict   # noqa: F404
 
 # Messages
 INVALID_FORMAT = "Invalid image format"
@@ -57,7 +58,7 @@ def predict_age():
         nparr = np.fromstring(file.read(), np.uint8)
         img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
     except Exception as error:
-        print(error)
+        print(str(error))
         return jsonify({
             "name": file_name,
             "message": INVALID_FORMAT,
@@ -92,18 +93,18 @@ def predict_age():
         print("Regression Error:", error)
         age_regression = -1
 
-    # Prediction - Clustering
+    # Prediction - Naive Bayes
     try:
-        age_cluster = random.randint(2, 80)
+        age_nb = nb_predict(img)
         success_count += 1
     except Exception as error:
-        print("Clustering Error:", error)
-        age_cluster = -1
+        print("Naive Bayes Error:", error)
+        age_nb = -1
 
     ages = {
-        "cnn": age_cnn,
+        "cnn": str(age_cnn),
         "regression": str(age_regression),
-        "clustering": str(age_cluster),
+        "nb": str(age_nb),
     }
 
     if success_count == 3:
