@@ -9,9 +9,14 @@ import cv2
 from collections import defaultdict
 import numpy as np
 import pandas as pd
+
+# Prevent TF form accessing GPU. We don't need it for prediction
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"  # noqa: F404
+
 import tensorflow as tf
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from server.models.cnn.model import get_model, IMAGE_SIZE, OLD_WEIGHTS_PATH, BEST_WEIGHTS_PATH, CURR_DIR
+from server.models.cnn.preprocessing import preprocess_image
 
 
 def predict(img):
@@ -22,7 +27,7 @@ def predict(img):
     @Returns:
                     The predicted age in float
     """
-    model = get_model(summary=False)
+    model = get_model(summary=True)
     if os.path.exists(os.path.join(CURR_DIR, BEST_WEIGHTS_PATH)):
         model.load_weights(os.path.join(CURR_DIR, BEST_WEIGHTS_PATH))
     elif os.path.exists(os.path.join(CURR_DIR, OLD_WEIGHTS_PATH)):
@@ -32,13 +37,18 @@ def predict(img):
         raise FileNotFoundError
 
     # Add batch size as first dimension
-    img = cv2.resize(img, IMAGE_SIZE)
-    img = img.reshape((1,) + img.shape)
+    # img = cv2.resize(img, IMAGE_SIZE)
+    # img = img.reshape((1,) + img.shape)
+
+    print("[before] img shape: ", img.shape)
+    img = preprocess_image(img)
+    print("[After] img shape: ", img.shape)
 
     try:
-        data_gen = ImageDataGenerator(rescale=1./255)
-        test_gen = data_gen.flow(img)
-        y_hat = model.predict(test_gen)
+        # New approach doesn't use image generator
+        # data_gen = ImageDataGenerator(rescale=1./255)
+        # test_gen = data_gen.flow(img)
+        y_hat = model.predict(img)
 
         possibles_predictions = y_hat.argsort()[:, -5:]
         possibles_predictions = list(

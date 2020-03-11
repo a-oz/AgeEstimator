@@ -7,9 +7,6 @@ import os
 import itertools
 import pandas as pd
 
-# Prevent TF form accessing GPU. We don't need it for prediction
-# os.environ["CUDA_VISIBLE_DEVICES"] = "-1"  # noqa: F404
-
 from tensorflow.keras.optimizers import Nadam, Adam, SGD
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Input, Flatten, Dense, BatchNormalization, Dropout
@@ -27,6 +24,7 @@ BEST_WEIGHTS_PATH = "best_nn_classification_weights.hdf5"
 
 # We define our IMAGE_SIZE here because 250x250 is too big for VGGFace
 IMAGE_SIZE = (224, 224)
+IMAGE_SHAPE = IMAGE_SIZE + (3,)
 INPUT_SHAPE = 2048
 
 # Make compatible path for Python and Jupyter Notebook

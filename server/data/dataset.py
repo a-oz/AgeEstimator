@@ -32,7 +32,7 @@ class DataLoader(object):
         return data_file_utils.get_age_by_file_name(
             os.path.split(full_path)[-1])
 
-    def load_train(self, feature=False):
+    def load_train(self, feature=False, flatten=True):
         r"""File names of training data and their labels"""
         if not feature:
             return self.x_train, self.y_train
@@ -42,11 +42,12 @@ class DataLoader(object):
         y_train = np.load(os.path.join(
             self.feature_dir, "labels-train-worker0.npy"))
 
-        x_train = x_train.reshape((x_train.shape[0], -1))
-        y_train = y_train.reshape((y_train.shape[0], -1))
+        if flatten:
+            x_train = x_train.reshape((x_train.shape[0], -1))
+            y_train = y_train.reshape((y_train.shape[0], -1))
         return x_train, y_train
 
-    def load_test(self, feature=False):
+    def load_test(self, feature=False, flatten=True):
         r"""File names of test data and their labels"""
         if not feature:
             return self.x_test, self.y_test
@@ -55,6 +56,8 @@ class DataLoader(object):
             self.feature_dir, "features-test-worker0.npy"))
         y_test = np.load(os.path.join(
             self.feature_dir, "labels-test-worker0.npy"))
-        x_test = x_test.reshape((x_test.shape[0], -1))
-        y_test = y_test.reshape((y_test.shape[0], -1))
+
+        if flatten:
+            x_test = x_test.reshape((x_test.shape[0], -1))
+            y_test = y_test.reshape((y_test.shape[0], -1))
         return x_test, y_test

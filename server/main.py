@@ -63,6 +63,8 @@ def predict_age():
             "ages": None,
         })
 
+    message = ""
+
     # Resize img
     img = cv2.resize(img, INPUT_SHAPE)
 
@@ -105,6 +107,9 @@ def predict_age():
 
     if success_count == 3:
         message = SUCCESS
+    elif message != "":
+        additional_message = FAILURE if success_count == 0 else PARTIAL_SUCCESS
+        message = additional_message + ". " + message
     else:
         message = FAILURE if success_count == 0 else PARTIAL_SUCCESS
 
